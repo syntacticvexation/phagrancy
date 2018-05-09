@@ -37,6 +37,6 @@ $app->group('/{scope}', function () {
 		$this->get('', Action\Scope\Box\Definition::class);
 		$this->get('/{version}/{provider}', Action\Scope\Box\SendFile::class);
 	});
-})->add($container[\Phagrancy\Http\Middleware\ValidatePassword::class]);
+})->add($container[\Phagrancy\Http\Middleware\ValidateAccessToken::class]);
 
 $app->run();
