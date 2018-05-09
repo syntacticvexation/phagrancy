@@ -1,77 +1,15 @@
-# Private Vagrant Box Hosting
+## What is Phagrancy?
 
-Phagrancy implements a self-hosted subset of Vagrant Cloud. It allows you to build images in Packer, 
-publish them and then share the images with your co-workers via Vagrant, all on-premise.
+Phagrancy implements a self-hosted subset of Vagrant Cloud. It allows you to build images in Packer, publish them and then share the images with your co-workers via Vagrant, all on-premise.
 
-#### Installation
+## Documentation
 
-```
-cd /srv/www
-git clone https://github.com/dlundgren/phagrancy.git phagrancy
-cd phagrancy
-mkdir -p data/storage
-```
+Refer to the [wiki](https://github.com/syntacticvexation/phagrancy/wiki).
 
-#### Configuration
+## Questions or need help?
 
-Create a `.env` and specify the options
-
-Option| Description 
-------|-------------
-**storage_path** | Path to the box storage. Default is `data/storage`. Relative paths will be made absolute using the app root.
-**api_token** | Token required to access the API.
-**access_password** | Password for accessing the frontend. Any username is accepted 
-
-### Publishing images
-##### Via Packer
-Add something like the following to your `.json` Packer file. For Packer versions <= 0.8.2, use `server_address`, *not* `atlas_url`.
-```
-  ...
-  "post-processors": [                              
-    {   
-      "output": "box/{{.Provider}}/ubuntu1404-{{user `cm`}}{{user `cm_version`}}-{{user `version`}}.box",
-      "type": "vagrant"
-    },  
-    {   
-      "type": "atlas",
-      "artifact": "myusername/ubuntu",
-      "artifact_type": "vagrant.box",
-      "atlas_url": "http://localhost:8099/",
-      "metadata": {
-        "provider": "virtualbox",
-        "version": "1.0.0"
-      }   
-    }   
-  ], 
-  ...
-```
-##### Manually uploading
-You can easily upload a box you have built locally using `curl`.
-```
-curl -XPUT http://localhost:8099/api/v1/box/myusername/ubuntu/version/1.0.0/provider/virtualbox/upload?access_token=<token> --upload-file ubuntu-precise.box
-```
-
-### Using in Vagrant
-Using Phagrancy requires a different Vagrant server URL. This can be set as an environment variable *or* as part of the `Vagrantfile`. Here is an example `Vagrantfile` with the server URL set.
-```ruby
-ENV['VAGRANT_SERVER_URL'] = 'http://localhost:8099'
-Vagrant.configure(2) do |config|
-  config.vm.box = "myusername/ubuntu"
-end
-```
-
-### API
-Operation| Command 
----------|----------
-**Deleting a box** | `curl -XDELETE http://localhost:8099/api/v1/box/myusername/ubuntu/version/1.0.0/provider/virtualbox?access_token=<token>`
-**Manually uploading a box** | `curl -XPUT http://localhost:8099/api/v1/box/myusername/ubuntu/version/1.0.0/provider/virtualbox/upload?access_token=<token> --upload-file ubuntu-precise.box`
-**Listing box versions** | `curl http://localhost:8099/myusername/ubuntu`
-**Deleting all box versions** | *Each box must be specifically deleted*
-
-### Security
-Phagrancy is intended to be used in a trusted network, and doesn't have any authentication. As can be seen in
-the examples above, reading, writing and modifying boxes is allowed without authentication.
+The original Phagrancy project is located [here](https://github.com/dlundgren/phagrancy).
 
 ## Credits
 
-The idea is based off of the [Vagrancy](https://github.com/ryandoyle/vagrancy) project, but has been updated for current packer releases.
+Phagrancy is developed by [dlundgren](https://github.com/dlundgren) and is based off of the [Vagrancy](https://github.com/ryandoyle/vagrancy) project, but has been updated for current packer releases. This is a fork of [dlundgren](https://github.com/dlundgren)'s project.
