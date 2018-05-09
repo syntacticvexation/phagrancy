@@ -31,6 +31,8 @@ $app->group('/api/v1/box/{scope}', function () {
 })->add($container[\Phagrancy\Http\Middleware\ValidateAccessToken::class]);
 
 // regular usage
+$app->get('/scopes', Action\Scopes::class);
+
 $app->group('/{scope}', function () {
 	$this->get('', Action\Scope\Index::class);
 	$this->group('/{name}', function () {

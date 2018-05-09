@@ -12,6 +12,15 @@ class Scope
 		$this->path = $path;
 	}
 
+
+	public function all()
+	{
+		$scopes = array_diff(scandir($this->path), array('.', '..', 'tmp'));
+
+		return $scopes;
+	}
+
+
 	public function ofName($name)
 	{
 		if (empty($name)) {
