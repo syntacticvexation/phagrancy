@@ -8,9 +8,7 @@
 namespace Phagrancy\Action\Api\Scope\Box;
 
 use Phagrancy\Http\Response;
-use Phagrancy\Model\Repository;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Http\Request;
 
 /**
  * Action to create a provider
@@ -24,8 +22,11 @@ class CreateProvider
 	public function __invoke(ServerRequestInterface $request)
 	{
 		$uri  = $request->getUri();
-		$r    = new \Slim\Http\Response();
 		$data = $request->getParsedBody();
+		if (empty($data)) {
+			return new Response\BadRequest('No provider supplied');
+		}
+
 		$json = $data['provider'];
 
 		// @TODO pass this through the validator
@@ -36,8 +37,6 @@ class CreateProvider
 		// specify the upload url path;
 		$json['upload_url'] = (string)$uri->withPath("{$path}/upload");
 
-		$r->getBody()->write(json_encode($json));
-
-		return $r;
+		return new Response\Json($json);
 	}
 }

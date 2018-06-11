@@ -8,13 +8,15 @@
 namespace Phagrancy\Action\Api\Scope\Box;
 
 use Phagrancy\Http\Response;
-use Phagrancy\Model\Entity\Box;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Action to return the box definition
+ *
+ * @NOTE because we do not allow "creation" of scopes/boxes, we MUST return a valid Box Definition, otherwise packer
+ *       will croak
  *
  * @package Phagrancy\Action\Api\Scope\Box
  */
@@ -28,17 +30,21 @@ class Definition
 	/**
 	 * @var Input\Box
 	 */
-	private $validator;
+	private $input;
 
-	public function __construct(Repository\Box $boxes, Input\Box $validator)
+	public function __construct(Repository\Box $boxes, Input\Box $input)
 	{
-		$this->boxes     = $boxes;
-		$this->validator = $validator;
+		$this->boxes = $boxes;
+		$this->input = $input;
 	}
 
 	public function __invoke(ServerRequestInterface $request)
 	{
-		$params = $this->validator->validate($request->getAttribute('route')->getArguments());
+		$params = $this->input->validate($request->getAttribute('route')->getArguments());
+		if (!$params) {
+			return new Response\NotFound();
+		}
+
 		$box    = $this->boxes->ofNameInScope($params['name'], $params['scope']);
 
 		return new Response\Api\BoxDefinition($box, $request->getUri());

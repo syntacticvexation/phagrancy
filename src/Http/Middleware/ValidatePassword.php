@@ -37,7 +37,9 @@ class ValidatePassword
 			return $next($request, $response);
 		}
 
-		list($user, $pass) = explode(':', $request->getUri()->getUserInfo());
+		$ary  = explode(':', $request->getUri()->getUserInfo());
+		$pass = isset($ary[1]) ? $ary[1] : null;
+
 		if ($this->password === $pass) {
 			return $next($request, $response);
 		}

@@ -1,11 +1,24 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Model\Repository\Box
+ */
+
 namespace Phagrancy\Model\Repository;
 
 use Phagrancy\Model\Entity;
 
+/**
+ * Repository for the boxes
+ *
+ * @package Phagrancy\Model\Repository
+ */
 class Box
 {
+	/**
+	 * @var string Path to the boxes
+	 */
 	private $path;
 
 	public function __construct($path)
@@ -13,6 +26,11 @@ class Box
 		$this->path = $path;
 	}
 
+	/**
+	 * @param $name
+	 * @param $scope
+	 * @return mixed|null|Entity\Box The Box
+	 */
 	public function ofNameInScope($name, $scope)
 	{
 		$key = "{$scope}.{$name}";
@@ -27,19 +45,31 @@ class Box
 		return $box;
 	}
 
+	/**
+	 * Loads the versions from the box directory
+	 *
+	 * @param string $dir
+	 * @return array List of versions
+	 */
 	private function loadVersions($dir)
 	{
 		$versions = [];
 		foreach (new \FilesystemIterator($dir) as $path => $file) {
 			/** @var $file \SplFileInfo */
 			if ($file->isDir()) {
-				$versions[$file->getBasename()] = $this->loadProviders($file->getRealPath());
+				$versions[$file->getBasename()] = $this->loadProviders($file->getPathname());
 			}
 		}
 
 		return $versions;
 	}
 
+	/**
+	 * Returns a list of providers from the version directory
+	 *
+	 * @param string $dir
+	 * @return array List of providers
+	 */
 	private function loadProviders($dir)
 	{
 		$providers = [];
