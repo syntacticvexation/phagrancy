@@ -97,9 +97,6 @@ class ApiTest
 	{
 		$response = $this->runApp($method, "/api/v1/box/{$path}");
 
-		if (!($response instanceof $responseClass)) {
-			var_dump($response);
-		}
 		self::assertInstanceOf($responseClass, $response);
 		self::assertResponseHasStatus($response, 200);
 		self::assertMessageBodyEqualsJsonArray($response, $expected);
@@ -134,7 +131,7 @@ class ApiTest
 	{
 		$response = $this->runApp('POST', '/api/v1/box/test/something/versions');
 
-		self::assertInstanceOf(Response\BadRequest::class, $response);
+		self::assertInstanceOf(Response\InvalidRequest::class, $response);
 	}
 
 	public function testCreateVersionReturnsSuccess()
@@ -151,7 +148,7 @@ class ApiTest
 	{
 		$response = $this->runApp('POST', '/api/v1/box/test/something/version/1.0.0/providers');
 
-		self::assertInstanceOf(Response\BadRequest::class, $response);
+		self::assertInstanceOf(Response\InvalidRequest::class, $response);
 	}
 
 	public function testCreateProviderReturnsSuccess()
@@ -182,6 +179,8 @@ class ApiTest
 		self::assertInstanceOf(Response\Json::class, $response);
 		self::assertMessageBodyEqualsJsonArray($response, []);
 		self::assertEquals('upload-data', file_get_contents($this->fs->url() . '/data/storage/test/something/1.0.0/virtualtest.box'));
+
+		$response->getBody()->close();
 	}
 
 	public function testUploadReturnsNotFound()
